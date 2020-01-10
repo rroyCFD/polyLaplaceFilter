@@ -188,9 +188,15 @@ Foam::tmp<Foam::volVectorField> Foam::polyLaplaceFilter::operator()
 {
     correctBoundaryConditions(unFilteredField);
 
-    tmp<volVectorField> filteredField =
-        unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
+    // tmp<volVectorField> filteredField =
+    //     unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
 
+    tmp<volVectorField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
+
+    tmp<volVectorField> filteredField =
+        unFilteredField() + 0.375*tLapField + 0.0375*fvc::laplacian(deltaSquared_, tLapField());
+
+    tLapField.clear();
     unFilteredField.clear();
 
     return filteredField;
@@ -204,9 +210,15 @@ Foam::tmp<Foam::volSymmTensorField> Foam::polyLaplaceFilter::operator()
 {
     correctBoundaryConditions(unFilteredField);
 
-    tmp<volSymmTensorField> filteredField =
-        unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
+    // tmp<volSymmTensorField> filteredField =
+    //     unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
 
+    tmp<volSymmTensorField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
+
+    tmp<volSymmTensorField> filteredField =
+        unFilteredField() + 0.375*tLapField + 0.0375*fvc::laplacian(deltaSquared_, tLapField());
+
+    tLapField.clear();
     unFilteredField.clear();
 
     return filteredField;
@@ -220,9 +232,15 @@ Foam::tmp<Foam::volTensorField> Foam::polyLaplaceFilter::operator()
 {
     correctBoundaryConditions(unFilteredField);
 
-    tmp<volTensorField> filteredField =
-        unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
+    // tmp<volTensorField> filteredField =
+    //     unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
 
+    tmp<volTensorField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
+
+    tmp<volTensorField> filteredField =
+        unFilteredField() + 0.375*tLapField + 0.0375*fvc::laplacian(deltaSquared_, tLapField());
+
+    tLapField.clear();
     unFilteredField.clear();
 
     return filteredField;
