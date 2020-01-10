@@ -166,9 +166,15 @@ Foam::tmp<Foam::volScalarField> Foam::polyLaplaceFilter::operator()
 {
     correctBoundaryConditions(unFilteredField);
 
-    tmp<volScalarField> filteredField =
-        unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
+    // tmp<volScalarField> filteredField =
+    //     unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
 
+    tmp<volScalarField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
+
+    tmp<volScalarField> filteredField =
+        unFilteredField() + 0.375*tLapField + 0.0375*fvc::laplacian(deltaSquared_, tLapField());
+
+    tLapField.clear();
     unFilteredField.clear();
 
     return filteredField;
