@@ -28,6 +28,7 @@ License
 #include "calculatedFvPatchFields.H"
 #include "fvm.H"
 #include "fvc.H"
+#include "fvCFD.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
@@ -55,9 +56,41 @@ Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, scalar widthCoeff
         mesh,
         dimensionedScalar("zero", dimLength*dimLength, 0),
         calculatedFvPatchScalarField::typeName
+    ),
+
+    deltaSquared_
+    (
+        IOobject
+        (
+            "deltaSquared",
+            mesh.time().timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("zero", dimLength*dimLength, 0)
     )
 {
     coeff_.ref() = pow(mesh.V(), 2.0/3.0)/widthCoeff_;
+
+
+    deltaSquared_.primitiveFieldRef() = (mesh.delta() & mesh.delta());
+
+    forAll(mesh.boundaryMesh(), patchI)
+    {
+        fvsPatchScalarField& deltaSquaredB =
+            deltaSquared_.boundaryFieldRef()[patchI];
+
+        const fvPatch& cPatch = deltaSquaredB.patch();
+
+        if(cPatch.type() != "empty")
+        {
+            deltaSquaredB = cPatch.delta() & cPatch.delta();
+        }
+    }
+
+    deltaSquared_.write();
 }
 
 
@@ -79,11 +112,42 @@ Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, const dictionary&
         mesh,
         dimensionedScalar("zero", dimLength*dimLength, 0),
         calculatedFvPatchScalarField::typeName
+    ),
+
+    deltaSquared_
+    (
+        IOobject
+        (
+            "deltaSquared",
+            mesh.time().timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh,
+        dimensionedScalar("zero", dimLength*dimLength, 0)
     )
 {
     coeff_.ref() = pow(mesh.V(), 2.0/3.0)/widthCoeff_;
-}
 
+
+    deltaSquared_.primitiveFieldRef() = (mesh.delta() & mesh.delta());
+
+    forAll(mesh.boundaryMesh(), patchI)
+    {
+        fvsPatchScalarField& deltaSquaredB =
+            deltaSquared_.boundaryFieldRef()[patchI];
+
+        const fvPatch& cPatch = deltaSquaredB.patch();
+
+        if(cPatch.type() != "empty")
+        {
+            deltaSquaredB = cPatch.delta() & cPatch.delta();
+        }
+    }
+
+    deltaSquared_.write();
+}
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 

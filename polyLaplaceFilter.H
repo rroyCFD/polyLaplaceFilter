@@ -44,6 +44,7 @@ SourceFiles
 #define polyLaplaceFilter_H
 
 #include "LESfilter.H"
+#include "surfaceFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -63,6 +64,7 @@ class polyLaplaceFilter
         scalar widthCoeff_;
         volScalarField coeff_;
 
+        surfaceScalarField deltaSquared_;
 
     // Private Member Functions
 
