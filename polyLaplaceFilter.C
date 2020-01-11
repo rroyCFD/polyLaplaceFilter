@@ -41,23 +41,11 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, scalar widthCoeff)
+Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, scalar d1, scalar d2)
 :
     LESfilter(mesh),
-    widthCoeff_(widthCoeff),
-    coeff_
-    (
-        IOobject
-        (
-            "polyLaplaceFilterCoeff",
-            mesh.time().timeName(),
-            mesh
-        ),
-        mesh,
-        dimensionedScalar("zero", dimLength*dimLength, 0),
-        calculatedFvPatchScalarField::typeName
-    ),
-
+    d1_(d1),
+    d2_(d2),
     deltaSquared_
     (
         IOobject
@@ -72,9 +60,6 @@ Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, scalar widthCoeff
         dimensionedScalar("zero", dimLength*dimLength, 0)
     )
 {
-    coeff_.ref() = pow(mesh.V(), 2.0/3.0)/widthCoeff_;
-
-
     deltaSquared_.primitiveFieldRef() = (mesh.delta() & mesh.delta());
 
     forAll(mesh.boundaryMesh(), patchI)
@@ -97,23 +82,8 @@ Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, scalar widthCoeff
 Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, const dictionary& bd)
 :
     LESfilter(mesh),
-    widthCoeff_
-    (
-        readScalar(bd.optionalSubDict(type() + "Coeffs").lookup("widthCoeff"))
-    ),
-    coeff_
-    (
-        IOobject
-        (
-            "polyLaplaceFilterCoeff",
-            mesh.time().timeName(),
-            mesh
-        ),
-        mesh,
-        dimensionedScalar("zero", dimLength*dimLength, 0),
-        calculatedFvPatchScalarField::typeName
-    ),
-
+    d1_(readScalar(bd.optionalSubDict(type() + "Coeffs").lookup("d1"))),
+    d2_(readScalar(bd.optionalSubDict(type() + "Coeffs").lookup("d2"))),
     deltaSquared_
     (
         IOobject
@@ -128,9 +98,6 @@ Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, const dictionary&
         dimensionedScalar("zero", dimLength*dimLength, 0)
     )
 {
-    coeff_.ref() = pow(mesh.V(), 2.0/3.0)/widthCoeff_;
-
-
     deltaSquared_.primitiveFieldRef() = (mesh.delta() & mesh.delta());
 
     forAll(mesh.boundaryMesh(), patchI)
@@ -153,7 +120,8 @@ Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, const dictionary&
 
 void Foam::polyLaplaceFilter::read(const dictionary& bd)
 {
-    bd.optionalSubDict(type() + "Coeffs").lookup("widthCoeff") >> widthCoeff_;
+    bd.optionalSubDict(type() + "Coeffs").lookup("d1") >> d1_;
+    bd.optionalSubDict(type() + "Coeffs").lookup("d2") >> d2_;
 }
 
 
@@ -166,13 +134,10 @@ Foam::tmp<Foam::volScalarField> Foam::polyLaplaceFilter::operator()
 {
     correctBoundaryConditions(unFilteredField);
 
-    // tmp<volScalarField> filteredField =
-    //     unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
-
     tmp<volScalarField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
 
     tmp<volScalarField> filteredField =
-        unFilteredField() + 0.375*tLapField + 0.0375*fvc::laplacian(deltaSquared_, tLapField());
+        unFilteredField() + d1_*tLapField + d2_*fvc::laplacian(deltaSquared_, tLapField());
 
     tLapField.clear();
     unFilteredField.clear();
@@ -188,13 +153,10 @@ Foam::tmp<Foam::volVectorField> Foam::polyLaplaceFilter::operator()
 {
     correctBoundaryConditions(unFilteredField);
 
-    // tmp<volVectorField> filteredField =
-    //     unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
-
     tmp<volVectorField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
 
     tmp<volVectorField> filteredField =
-        unFilteredField() + 0.375*tLapField + 0.0375*fvc::laplacian(deltaSquared_, tLapField());
+        unFilteredField() + d1_*tLapField + d2_*fvc::laplacian(deltaSquared_, tLapField());
 
     tLapField.clear();
     unFilteredField.clear();
@@ -210,13 +172,10 @@ Foam::tmp<Foam::volSymmTensorField> Foam::polyLaplaceFilter::operator()
 {
     correctBoundaryConditions(unFilteredField);
 
-    // tmp<volSymmTensorField> filteredField =
-    //     unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
-
     tmp<volSymmTensorField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
 
     tmp<volSymmTensorField> filteredField =
-        unFilteredField() + 0.375*tLapField + 0.0375*fvc::laplacian(deltaSquared_, tLapField());
+        unFilteredField() + d1_*tLapField + d2_*fvc::laplacian(deltaSquared_, tLapField());
 
     tLapField.clear();
     unFilteredField.clear();
@@ -232,19 +191,15 @@ Foam::tmp<Foam::volTensorField> Foam::polyLaplaceFilter::operator()
 {
     correctBoundaryConditions(unFilteredField);
 
-    // tmp<volTensorField> filteredField =
-    //     unFilteredField() + fvc::laplacian(coeff_, unFilteredField());
-
     tmp<volTensorField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
 
     tmp<volTensorField> filteredField =
-        unFilteredField() + 0.375*tLapField + 0.0375*fvc::laplacian(deltaSquared_, tLapField());
+        unFilteredField() + d1_*tLapField + d2_*fvc::laplacian(deltaSquared_, tLapField());
 
     tLapField.clear();
     unFilteredField.clear();
 
     return filteredField;
 }
-
 
 // ************************************************************************* //

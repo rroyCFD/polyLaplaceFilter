@@ -61,8 +61,9 @@ class polyLaplaceFilter
 {
     // Private data
 
-        scalar widthCoeff_;
-        volScalarField coeff_;
+        // polynomial coefficients
+        scalar d1_;
+        scalar d2_;
 
         surfaceScalarField deltaSquared_;
 
@@ -82,7 +83,7 @@ public:
     // Constructors
 
         //- Construct from components
-        polyLaplaceFilter(const fvMesh& mesh, scalar widthCoeff);
+        polyLaplaceFilter(const fvMesh& mesh, scalar d1, scalar d2);
 
         //- Construct from IOdictionary
         polyLaplaceFilter(const fvMesh& mesh, const dictionary&);
