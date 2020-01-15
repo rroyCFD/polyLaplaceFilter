@@ -75,7 +75,7 @@ Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, scalar d1, scalar
         }
     }
 
-    deltaSquared_.write();
+    // deltaSquared_.write();
 }
 
 
@@ -113,7 +113,7 @@ Foam::polyLaplaceFilter::polyLaplaceFilter(const fvMesh& mesh, const dictionary&
         }
     }
 
-    deltaSquared_.write();
+    // deltaSquared_.write();
 }
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
