@@ -137,7 +137,7 @@ Foam::tmp<Foam::volScalarField> Foam::polyLaplaceFilter::operator()
     tmp<volScalarField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
 
     tmp<volScalarField> filteredField =
-        unFilteredField() + d1_*tLapField + d2_*fvc::laplacian(deltaSquared_, tLapField());
+        unFilteredField() + d1_*tLapField() + d2_*fvc::laplacian(deltaSquared_, tLapField());
 
     tLapField.clear();
     unFilteredField.clear();
@@ -156,7 +156,7 @@ Foam::tmp<Foam::volVectorField> Foam::polyLaplaceFilter::operator()
     tmp<volVectorField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
 
     tmp<volVectorField> filteredField =
-        unFilteredField() + d1_*tLapField + d2_*fvc::laplacian(deltaSquared_, tLapField());
+        unFilteredField() + d1_*tLapField() + d2_*fvc::laplacian(deltaSquared_, tLapField());
 
     tLapField.clear();
     unFilteredField.clear();
@@ -175,7 +175,7 @@ Foam::tmp<Foam::volSymmTensorField> Foam::polyLaplaceFilter::operator()
     tmp<volSymmTensorField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
 
     tmp<volSymmTensorField> filteredField =
-        unFilteredField() + d1_*tLapField + d2_*fvc::laplacian(deltaSquared_, tLapField());
+        unFilteredField() + d1_*tLapField() + d2_*fvc::laplacian(deltaSquared_, tLapField());
 
     tLapField.clear();
     unFilteredField.clear();
@@ -194,7 +194,7 @@ Foam::tmp<Foam::volTensorField> Foam::polyLaplaceFilter::operator()
     tmp<volTensorField> tLapField = fvc::laplacian(deltaSquared_, unFilteredField());
 
     tmp<volTensorField> filteredField =
-        unFilteredField() + d1_*tLapField + d2_*fvc::laplacian(deltaSquared_, tLapField());
+        unFilteredField() + d1_*tLapField() + d2_*fvc::laplacian(deltaSquared_, tLapField());
 
     tLapField.clear();
     unFilteredField.clear();
