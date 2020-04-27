@@ -6,7 +6,7 @@
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
-    This file is part of OpenFOAM.
+    This file is compatible with OpenFOAM.
 
     OpenFOAM is free software: you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by
@@ -25,15 +25,11 @@ Class
     Foam::polyLaplaceFilter
 
 Description
-    Laplace filter for LES
+    Polynomial Laplace filter for LES. The polynomial coefficients are derived follwing the publication by Trias et al.
 
-    \verbatim
-    Kernel                 as filter          as Test filter with ratio 2
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Box filter:            g = delta2/24  ->  g = delta2/6
-    Spherical box filter:  g = delta2/64  ->  g = delta2/16
-    Gaussian filter:       g = delta2/24  ->  g = delta2/6
-    \endverbatim
+    Trias, F. X., & Verstappen, R. W. C. P. (2011). On the construction of discrete filters for symmetry-preserving regularization models. Computers and Fluids, 40(1), 139–148. https://doi.org/10.1016/j.compfluid.2010.08.015
+
+
 
 SourceFiles
     polyLaplaceFilter.C
